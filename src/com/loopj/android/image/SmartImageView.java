@@ -13,44 +13,52 @@ public class SmartImageView extends ImageView {
     private static ExecutorService threadPool = Executors.newFixedThreadPool(LOADING_THREADS);
 
     private SmartImageTask currentTask;
-
+    private WebImageCache webImageCache;
 
     public SmartImageView(Context context) {
         super(context);
+        webImageCache = CacheFactory.getInstance().getCache(context, CacheFactory.CacheType.TEMPORARY);
     }
 
     public SmartImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        String cache_type = attrs.getAttributeValue("http://schemas.android.com/apk/com.ygames2.wgc.ui", "cache_type");
+        if (cache_type != null && cache_type.equals("permanent")) {
+            webImageCache = CacheFactory.getInstance().getCache(context, CacheFactory.CacheType.PERMANENT);
+        } else {
+            webImageCache = CacheFactory.getInstance().getCache(context, CacheFactory.CacheType.TEMPORARY);
+        }
     }
 
     public SmartImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        webImageCache = CacheFactory.getInstance().getCache(context, CacheFactory.CacheType.TEMPORARY);
     }
 
 
     // Helpers to set image by URL
     public void setImageUrl(String url) {
-        setImage(new WebImage(url));
+        setImage(new WebImage(url, webImageCache));
     }
 
     public void setImageUrl(String url, SmartImageTask.OnCompleteListener completeListener) {
-        setImage(new WebImage(url), completeListener);
+        setImage(new WebImage(url, webImageCache), completeListener);
     }
 
     public void setImageUrl(String url, final Integer fallbackResource) {
-        setImage(new WebImage(url), fallbackResource);
+        setImage(new WebImage(url, webImageCache), fallbackResource);
     }
 
     public void setImageUrl(String url, final Integer fallbackResource, SmartImageTask.OnCompleteListener completeListener) {
-        setImage(new WebImage(url), fallbackResource, completeListener);
+        setImage(new WebImage(url, webImageCache), fallbackResource, completeListener);
     }
 
     public void setImageUrl(String url, final Integer fallbackResource, final Integer loadingResource) {
-        setImage(new WebImage(url), fallbackResource, loadingResource);
+        setImage(new WebImage(url, webImageCache), fallbackResource, loadingResource);
     }
 
     public void setImageUrl(String url, final Integer fallbackResource, final Integer loadingResource, SmartImageTask.OnCompleteListener completeListener) {
-        setImage(new WebImage(url), fallbackResource, loadingResource, completeListener);
+        setImage(new WebImage(url, webImageCache), fallbackResource, loadingResource, completeListener);
     }
 
 

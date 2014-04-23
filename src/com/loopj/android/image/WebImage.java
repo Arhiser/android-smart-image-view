@@ -1,30 +1,27 @@
 package com.loopj.android.image;
 
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 public class WebImage implements SmartImage {
     private static final int CONNECT_TIMEOUT = 5000;
     private static final int READ_TIMEOUT = 10000;
 
-    private static WebImageCache webImageCache;
+    private WebImageCache webImageCache;
 
     private String url;
 
-    public WebImage(String url) {
+    public WebImage(String url, WebImageCache webImageCache) {
         this.url = url;
+        this.webImageCache = webImageCache;
     }
 
     public Bitmap getBitmap(Context context) {
-        // Don't leak context
-        if(webImageCache == null) {
-            webImageCache = new WebImageCache(context);
-        }
 
         // Try getting bitmap from cache first
         Bitmap bitmap = null;
@@ -56,7 +53,7 @@ public class WebImage implements SmartImage {
         return bitmap;
     }
 
-    public static void removeFromCache(String url) {
+    public void removeFromCache(String url) {
         if(webImageCache != null) {
             webImageCache.remove(url);
         }
